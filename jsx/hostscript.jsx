@@ -66,7 +66,7 @@ function focusColorama() {
 
 function pickColor(oldColor, dir) {
     var externalLibrary = new ExternalObject(dir);
-    var newColor = externalLibrary.colorPicker(oldColor, "dialog_title");
+    var newColor = externalLibrary.colorPicker(oldColor, "Color");
     if(newColor == -1){ //Returns -1 if user clicked on cancel
         newColor = oldColor;
     }
