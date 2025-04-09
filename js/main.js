@@ -15,12 +15,14 @@ function main() {
     let gradient = document.querySelector("#grad");
     let tab_table = document.querySelector("#tab-table");
     let pos_input = document.querySelector("#pos-input");
+    let opacity_input = document.querySelector("#opacity-input");
     let btn_table = document.querySelector("#btn-table");
     let btn_help = document.querySelector("#btn-help");
 
     let tabs;
     let tab_colors;
     let tab_positions;
+    let tab_opacities;
 
     const tab_width = 10; //in px, check styles.css > .gradtab > width
 
@@ -60,22 +62,36 @@ function main() {
     init_btn_table();
     init_btn_help();
     init_pos_input();
+    init_opacity_input();
 
     themeManager.init();
 
-    update_grad(tab_colors, tab_positions);
+    update_grad(tab_colors, tab_positions, tab_opacities);
 
 
     // helpers
-    function update_grad(colors, positions) {
+    function colorToRGBA(color, opacity) {
+        const r = parseInt(color.substring(0, 2), 16);
+        const g = parseInt(color.substring(2, 4), 16);
+        const b = parseInt(color.substring(4, 6), 16);
+        const a = opacity;
+        return `rgba(${r}, ${g}, ${b}, ${a})`;
+    }
+
+    function update_grad(colors, positions, opacities) {
         let grad_str = "linear-gradient(to right, ";
 
-        var i;
+        var i, color, opacity, rgba;
         for (i = 0;; i++) {
+
+            color = colors[i];
+            opacity = opacities[i];
+            rgba = colorToRGBA(color, opacity);
+
             if (i != tabs.length - 1) {
-                grad_str += `#${colors[i]} ${positions[i]*100}%, `;
+                grad_str += `${rgba} ${positions[i]*100}%, `;
             } else {
-                grad_str += `#${colors[i]} ${positions[i]*100}%)`;
+                grad_str += `${rgba} ${positions[i]*100}%)`;
                 break;
             }
         }
@@ -95,19 +111,21 @@ function main() {
             let cell1 = r.insertCell(0);
             let cell2 = r.insertCell(1);
             let cell3 = r.insertCell(2);
+            let cell4 = r.insertCell(3);
             cell1.innerHTML = i;
             cell2.innerHTML = (tab_positions[i] * 100).toFixed(2) + "%";
-            cell3.innerHTML = tab_colors[i];
+            cell3.innerHTML = (tab_opacities[i] * 100).toFixed(2) + "%";
+            cell4.innerHTML = tab_colors[i];
 
-            cell3.style.position = "relative";
+            cell4.style.position = "relative";
             let preview_block = document.createElement("div");
             preview_block.classList.add("preview-block");
             preview_block.style.backgroundColor = `#${tab_colors[i]}`;
-            cell3.appendChild(preview_block);
+            cell4.appendChild(preview_block);
         });
         rows.forEach((e, i) => e.addEventListener("click", function() {
             update_selection(tabs[i]);
-            update_grad(tab_colors, tab_positions);
+            update_grad(tab_colors, tab_positions, tab_opacities);
         }));
         rows.forEach((e, i) => e.addEventListener("dblclick", function() {
             csInterface.evalScript(
@@ -116,7 +134,7 @@ function main() {
                     selected_tab.dataset.color = last_selected_color = Number(result).toString(16).toUpperCase().padStart(6, '0');
                     tab_set_color(selected_tab);
                     update_tab_data();
-                    update_grad(tab_colors, tab_positions);
+                    update_grad(tab_colors, tab_positions, tab_opacities);
                 });
         }));
     }
@@ -126,6 +144,7 @@ function main() {
         tabs.sort((a, b) => (a.dataset.pos - b.dataset.pos));
         tab_colors = tabs.map((tab) => tab.dataset.color);
         tab_positions = tabs.map((tab) => tab.dataset.pos);
+        tab_opacities = tabs.map((tab) => tab.dataset.opacity);
     }
 
     function update_selection(tab) {
@@ -141,14 +160,19 @@ function main() {
             tab_table.rows[tabs.indexOf(tab)].classList.add("tr-selected");
             if ((selected_tab.id === "first-tab") || (selected_tab.id === "last-tab")) {
                 pos_input.disabled = true;
+                opacity_input.disabled = false;
             } else {
                 pos_input.disabled = false;
+                opacity_input.disabled = false;
             }
             pos_input.value = tab.dataset.pos;
+            opacity_input.value = tab.dataset.opacity;
         } else {
             selected_tab = null;
             pos_input.value = "";
             pos_input.disabled = true;
+            opacity_input.value = "";
+            opacity_input.disabled = true;
         }
     }
 
@@ -166,7 +190,13 @@ function main() {
         tab.style.left = compute_tab_pos(pos);
         pos_input.value = tab.dataset.pos = pos;
         update_tab_data();
-        update_grad(tab_colors, tab_positions);
+        update_grad(tab_colors, tab_positions, tab_opacities);
+    }
+
+    function update_tab_opacity(tab, opacity) {
+        opacity_input.value = tab.dataset.opacity = opacity;
+        update_tab_data();
+        update_grad(tab_colors, tab_positions, tab_opacities);
     }
 
     //init functions
@@ -184,7 +214,7 @@ function main() {
                     selected_tab.dataset.color = last_selected_color = Number(result).toString(16).toUpperCase().padStart(6, '0');
                     tab_set_color(selected_tab);
                     update_tab_data();
-                    update_grad(tab_colors, tab_positions);
+                    update_grad(tab_colors, tab_positions, tab_opacities);
                 });
         });
     }
@@ -221,10 +251,11 @@ function main() {
             tab.classList.add("gradtab");
             tab.dataset.color = last_selected_color;
             tab.dataset.pos = (tab_positions[0] + tab_positions[1]) / 2;
+            tab.dataset.opacity = 1;
             init_tab(tab);
             tab_container.appendChild(tab);
             update_tab_data();
-            update_grad(tab_colors, tab_positions);
+            update_grad(tab_colors, tab_positions, tab_opacities);
             update_selection(tab);
         });
     }
@@ -242,7 +273,7 @@ function main() {
             selected_tab.remove();
             update_selection(null);
             update_tab_data();
-            update_grad(tab_colors, tab_positions);
+            update_grad(tab_colors, tab_positions, tab_opacities);
         });
     }
 
@@ -259,7 +290,7 @@ function main() {
                     selected_tab.dataset.color = last_selected_color = Number(result).toString(16).toUpperCase().padStart(6, '0');
                     tab_set_color(selected_tab);
                     update_tab_data();
-                    update_grad(tab_colors, tab_positions);
+                    update_grad(tab_colors, tab_positions, tab_opacities);
                 });
         });
     }
@@ -267,7 +298,7 @@ function main() {
     function init_btn_apply() {
         btn_apply.addEventListener("click", function() {
             csInterface.evalScript('queryColorama();', function(result) {
-                ffx.writeColors(tab_colors, tab_positions);
+                ffx.writeColors(tab_colors, tab_positions, tab_opacities);
                 csInterface.evalScript(`applyColorama(\"${ffxPath}\", ${result.toString()});`);
             });
         });
@@ -282,6 +313,19 @@ function main() {
             if (e.keyCode === 13) {
                 e.preventDefault();
                 update_tab_pos(selected_tab, Math.max(Math.min(this.value, 1 - extremity_soft_limit), extremity_soft_limit));
+            }
+        });
+    }
+
+    function init_opacity_input() {
+        opacity_input.disabled = true;
+        opacity_input.addEventListener("focusout", function() {
+            update_tab_opacity(selected_tab, this.value);
+        });
+        opacity_input.addEventListener("keyup", function(e) {
+            if (e.keyCode === 13) {
+                e.preventDefault();
+                update_tab_opacity(selected_tab, this.value);
             }
         });
     }

@@ -193,7 +193,8 @@ button:active {
     border: 2px gray solid;
 }
 
-#pos-input {
+#pos-input,
+#opacity-input {
     height: 100%;
     width: 95%;
     background-color: transparent;
@@ -203,12 +204,15 @@ button:active {
     border: 1px solid white;
 }
 
-#pos-input::selection {
+#pos-input::selection,
+#opacity-input::selection {
     background-color: white;
 }
 
 #pos-input::-webkit-outer-spin-button,
-#pos-input::-webkit-inner-spin-button {
+#pos-input::-webkit-inner-spin-button,
+#opacity-input::-webkit-outer-spin-button,
+#opacity-input::-webkit-inner-spin-button {
     -webkit-appearance: none;
     margin: 0;
 }
