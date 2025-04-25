@@ -1,0 +1,252 @@
+body {
+    background-color: #1C1C1C;
+    display: flex;
+    flex-direction: column;
+    font-family: "Lucida Grande";
+    font-size: 11px;
+    gap: 2em;
+    overflow: hidden;
+    padding: 1em;
+    user-select: none;
+}
+
+/**************************************************************************************
+ * BUTTONS
+ **************************************************************************************/
+.gradient-buttons {
+    display: flex;
+    gap: 1em;
+    justify-content: space-between;
+    width: 25em;
+}
+
+.apply-button,
+.delete-button,
+.about-button {
+    border-radius: 1.5em;
+    font-size: 1em;
+    height: 3.125em;
+    margin: 0;
+    padding: 0 1em;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.apply-button {
+    background-color: #1C6DE1;
+    border: 2px solid #1C6DE1;
+    color: #FFFEFF;
+}
+
+.apply-button:hover {
+    background-color: #145CC3;
+    border: 2px solid #145CC3;
+    color: #FFFFFF;
+}
+
+.delete-button,
+.about-button {
+    background-color: #1E1D1E;
+    border: 2px solid #4B4A4B;
+    color: #AFAEAF;
+}
+
+.delete-button:hover,
+.about-button:hover {
+    background-color: #4B4B4B;
+    border: 2px solid #6A6A6A;
+    color: #D1CFD0;
+}
+
+/**************************************************************************************
+ * GRADIENT CONTAINER
+ **************************************************************************************/
+.gradient-container {
+    align-items: center;
+    display: flex;
+    height: 26em;
+    justify-content: center;
+    width: 26em;
+}
+
+.gradient-stops {
+    align-items: center;
+    background-color: #1C1C1C;
+    border-radius: 50%;
+    box-sizing: border-box;
+    cursor: pointer;
+    display: flex;
+    height: 100%;
+    justify-content: center;
+    width: 100%;
+}
+
+.gradient-preview-bg {
+    align-items: center;
+    background: #FFFFFF;
+    background-image:
+        linear-gradient(45deg, #CBCBCC 25%, transparent 25%),
+        linear-gradient(135deg, #CBCBCC 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #CBCBCC 75%),
+        linear-gradient(135deg, transparent 75%, #CBCBCC 75%);
+    background-position:0 0, 1.5em 0, 1.5em -1.5em, 0px 1.5em;
+    background-size: 3em 3em;
+    border-radius: 50%;
+    border: 2px solid #AFB0AF;
+    box-sizing: border-box;
+    cursor: default;
+    display: flex;
+    height: 80%;
+    justify-content: center;
+    width: 80%;
+    z-index: 1;
+}
+
+.gradient-preview-fg {
+    align-items: center;
+    background-position: 0px 0px;
+    background-size: 100% 100%;
+    border-radius: 50%;
+    display: flex;
+    height: 100%;
+    justify-content: center;
+    width: 100%;
+    z-index: 2;
+}
+
+.gradient-knockout {
+    background-color: #1C1C1C;
+    border-radius: 50%;
+    border: 2px solid #AFB0AF;
+    box-sizing: border-box;
+    height: 30%;
+    width: 30%;
+    z-index: 3;
+}
+
+.gradient-stop {
+    align-items: flex-start;
+    background-color: #AFB0AF;
+    clip-path: polygon(0% 0, 100% 0, 100% calc(100% - 0.5em), 50% 100%, 0% calc(100% - 0.5em));
+    display: flex;
+    height: 2em;
+    justify-content: center;
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    width: 1.5em;
+}
+
+.gradient-stop::before {
+    background-color: var(--color, rgb(0, 0, 0));
+    content: "";
+    height: 1em;
+    margin-top: 0.25em;
+    width: 1em;
+}
+
+.gradient-stop.selected {
+    background-color: #1C6DE1;
+}
+
+/**************************************************************************************
+ * GRADIENT INFORMATION
+ **************************************************************************************/
+.gradient-information {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    gap: 1.25em;
+    height: 2.75em;
+    justify-content: space-between;
+    width: 26em;
+}
+
+.opacity-preview,
+.location-preview {
+    display: inline-flex;
+    margin: 2px 0;
+    width: 7.5em;
+}
+
+/**************************************************************************************
+ * GRADIENT INFORMATION ENABLED
+ **************************************************************************************/
+.opacity-input.enabled,
+.location-input.enabled {
+    color: #AFAFAF;
+}
+
+.opacity-input.enabled .opacity-preview,
+.location-input.enabled .location-preview {
+    cursor: pointer;
+}
+
+.opacity-input.enabled .opacity-preview:hover span,
+.location-input.enabled .location-preview:hover span {
+    text-decoration: underline;
+}
+
+.opacity-input.enabled .opacity-preview span,
+.location-input.enabled .location-preview span {
+    color: #1C6DE1;
+}
+
+/**************************************************************************************
+ * GRADIENT INFORMATION DISABLED
+ **************************************************************************************/
+.opacity-input.disabled,
+.location-input.disabled {
+    color: #696969;
+}
+
+.opacity-input.disabled .opacity-preview,
+.location-input.disabled .location-preview {
+    cursor: default;
+}
+
+.opacity-input.disabled .opacity-preview:hover span,
+.location-input.disabled .location-preview:hover span {
+    text-decoration: none;
+}
+
+.opacity-input.disabled .opacity-preview span,
+.location-input.disabled .location-preview span {
+    color: #AFAFAF;
+}
+
+/**************************************************************************************
+ * NUMBER INPUT
+ **************************************************************************************/
+input[type=number] {
+    background-color: #000000;
+    border-radius: 0.375em;
+    border: 1px solid #1C1C1C;
+    box-sizing: border-box;
+    color: #CCCECE;
+    font-family: "Lucida Grande";
+    font-size: 1em;
+    height: 2.75em;
+    margin: 0;
+    max-width: 100%;
+    outline: none;
+    padding: 0 0.5em;
+    width: 7.5em;
+}
+
+input[type=number]::-webkit-outer-spin-button,
+input[type=number]::-webkit-inner-spin-button {
+    display: none;
+    margin: 0;
+}
+
+input[type=number]:focus {
+    border: 2px solid #1C6DE1;
+}
+
+/**************************************************************************************
+ * HIDDEN
+ **************************************************************************************/
+.hidden {
+    display: none !important;
+}

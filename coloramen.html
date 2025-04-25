@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Coloramen</title>
+        <link rel="stylesheet" type="text/css" href="css/coloramen.css">
+    </head>
+    <body>
+        <div class="gradient-buttons">
+            <button class="apply-button">Apply Colorama</button>
+            <button class="delete-button">Delete Stop</button>
+            <button class="about-button">About</button>
+        </div>
+        <div class="gradient-container">
+            <div class="gradient-stops">
+                <div class="gradient-preview-bg">
+                    <div class="gradient-preview-fg">
+                        <div class="gradient-knockout"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="gradient-information">
+            <div class="opacity-input disabled">
+                <label>Opacity:</label>
+                <span class="opacity-preview"><span>-</span>&nbsp;%</span>
+                <input class="hidden" type="number" value="100" min="0" max="0" steps="0.01">
+            </div>
+            <div class="location-input disabled">
+                <label>Location:</label>
+                <span class="location-preview"><span>-</span>&nbsp;%</span>
+                <input class="hidden" type="number" value="100" min="0" max="0" steps="0.01">
+            </div>
+        </div>
+    </body>
+    <script type="text/javascript" src="js/lib/CSInterface.js"></script>
+    <script type="text/javascript" src="js/coloramen.js"></script>
+</html>
