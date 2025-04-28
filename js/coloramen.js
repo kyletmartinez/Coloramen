@@ -39,6 +39,7 @@ const locationEdit = locationContainer.querySelector("input");
 
 const applyButton = document.querySelector(".apply-button");
 const deleteButton = document.querySelector(".delete-button");
+const pullButton = document.querySelector(".pull-button");
 const aboutButton = document.querySelector(".about-button");
 
 /**************************************************************************************************
@@ -458,6 +459,28 @@ deleteButton.addEventListener("click", () => {
         updateGradientInformation();
         updateGradientPreview();
     }
+});
+
+/**************************************************************************************************
+ * Pull Button ************************************************************************************
+ **************************************************************************************************/
+
+pullButton.addEventListener("click", () => {
+    csi.evalScript("$._coloramen.getGradientFromAE();", result => {
+        const gradientStops = JSON.parse(result);
+        if (gradientStops !== null) {
+            Array.from(document.querySelectorAll(".gradient-stop")).forEach(stop => {
+                stop.remove();
+            });
+            gradientStops.forEach(stop => {
+                const opacity = parseFloat(stop.opacity) || 100;
+                const color = stop.color.hex;
+                const location = 50 * (parseFloat(stop.location) / 100);
+                addGradientStop(opacity, color, location);
+            });
+            updateGradientPreview();
+        }
+    });
 });
 
 /**************************************************************************************************
