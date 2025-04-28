@@ -37,39 +37,24 @@ $._coloramen.showAbout = function() {
     alert(message);
 };
 
-$._coloramen.getPropMap = function(inputString, compName, layerInstance, gradientInstance) {
-
+$._coloramen.getPropMap = function(inputString, compName, gradientIndex) {
     var compNameIndex = inputString.indexOf(compName);
-    if (compNameIndex === -1) return null;
 
-    var substring = inputString.slice(compNameIndex);
+    var compSubstring = inputString.slice(compNameIndex);
+    var layerRegex = new RegExp("Pulling gradient\\.[\\s\\S]*?LIST", "ig");
+    var layerMatch = layerRegex.exec(compSubstring);
 
-    var layerListRegex = new RegExp("Coloramen[\\s\\S]*?LIST", "ig");
-
-    var match;
-    var layerListMatches = [];
-    while ((match = layerListRegex.exec(substring)) !== null) {
-        layerListMatches.push({
-            "index": match.index,
-            "match": match[0]
-        });
-    }
-
-    if (layerListMatches.length < layerInstance || layerInstance < 1) return null;
-
-    var targetLayerList = layerListMatches[layerInstance - 1];
-
-    var nextLayerIndex = (layerListMatches[layerInstance] ? layerListMatches[layerInstance].index : substring.length);
-    var substringFromLayerList = substring.slice(targetLayerList.index + targetLayerList.match.length, nextLayerIndex);
+    var layerSubstring = compSubstring.slice(layerMatch.index + layerMatch[0].length);
 
     var propMapRegex = new RegExp("<prop\\.map version='4'>([\\s\\S]*?)<\\/prop\\.map>", "ig");
+
     var propMapMatches = [];
-    while ((match = propMapRegex.exec(substringFromLayerList)) !== null) {
+    var match;
+    while ((match = propMapRegex.exec(layerSubstring)) !== null) {
         propMapMatches.push(match[0]);
     }
 
-    if (propMapMatches.length < gradientInstance || gradientInstance < 1) return null;
-    return propMapMatches[gradientInstance - 1];
+    return propMapMatches[gradientIndex - 1];
 };
 
 $._coloramen.toHex = function(value) {
@@ -134,7 +119,7 @@ $._coloramen.getGradientStops = function(xmlString) {
     return result;
 };
 
-$._coloramen.getSelectedGradientInstance = function(comp, instance) {
+$._coloramen.getSelectedGradientIndex = function(comp, index) {
 
     function iterateThroughProperties(propertyGroup) {
         var numProperties = propertyGroup.numProperties;
@@ -142,9 +127,9 @@ $._coloramen.getSelectedGradientInstance = function(comp, instance) {
             var property = propertyGroup.property(p);
             if (property.propertyType === PropertyType.PROPERTY) {
                 if (property.matchName === "ADBE Vector Grad Colors") {
-                    instance = instance + 1;
+                    index = index + 1;
                     if (property.selected === true) {
-                        return instance;
+                        return index;
                     }
                 }
             }
@@ -162,61 +147,51 @@ $._coloramen.getSelectedGradientInstance = function(comp, instance) {
     return iterateThroughProperties(comp.selectedLayers[0]);
 };
 
-$._coloramen.getSelectedLayerInstance = function(comp, instance) {
-    var selectedLayer = comp.selectedLayers[0];
-    var selectedLayerName = selectedLayer.name;
-    for (var i = 1; i <= comp.numLayers; i++) {
-        var layer = comp.layer(i);
-        if (layer.name === selectedLayerName) {
-            instance = instance + 1;
-            if (layer === selectedLayer) {
-                return instance;
-            }
+$._coloramen.getProjectFileString = function() {
+    var layer = app.project.activeItem.selectedLayers[0];
+    var originalName = layer.name;
+    layer.name = "Pulling gradient...";
+    app.project.save();
+
+    var file = new File(app.project.file.absoluteURI);
+    file.open("r");
+    var fileString = file.read(file.length).toString();
+    file.close();
+
+    layer.name = originalName;
+    app.project.save();
+    return fileString;
+};
+
+$._coloramen.getSelectedGradientProperty = function(comp) {
+    var properties = [];
+    var selectedProperties = comp.selectedProperties;
+    var numProperties = selectedProperties.length;
+    for (var p = 0; p < numProperties; p++) {
+        var property = selectedProperties[p];
+        if (property.matchName === "ADBE Vector Grad Colors") {
+            properties.push(property);
         }
     }
+    return (properties.length === 1) ? properties[0] : false;
 };
 
 $._coloramen.getGradientFromAE = function() {
     try {
-        var validProperties = [];
         var comp = app.project.activeItem;
-        var compName = comp.name;
-        var properties = comp.selectedProperties;
-        var numProperties = properties.length;
-        for (var p = 0; p < numProperties; p++) {
-            var property = properties[p];
-            if (property.matchName === "ADBE Vector Grad Colors") {
-                validProperties.push(property);
-            }
+        if (!comp || !(comp instanceof CompItem)) {
+            throw "Please select a composition";
         }
-
-        if (validProperties.length === 1) {
-            var property = validProperties[0];
-            var layerInstance = this.getSelectedLayerInstance(comp, 0);
-            var gradientInstance = this.getSelectedGradientInstance(comp, 0);
-
-            var originalLayerName = comp.selectedLayers[0].name;
-            comp.selectedLayers[0].name = "Coloramen";
-
-            app.project.save();
-            var file = new File(app.project.file.absoluteURI);
-            file.open("r");
-            var fileString = file.read(file.length).toString();
-            file.close();
-
-            var propMap = this.getPropMap(fileString, compName, layerInstance, gradientInstance);
-            var gradientData = null;
-            if (propMap !== null) {
-                gradientData = this.getGradientStops(propMap);
-            }
-
-            comp.selectedLayers[0].name = originalLayerName;
-
-            return JSON.stringify(gradientData);
-        } else {
-            alert("Coloramen\nPlease select a single gradient color property");
+        var property = this.getSelectedGradientProperty(comp);
+        if (!property) {
+            throw "Please select a single gradient color property";
         }
+        var fileString = this.getProjectFileString();
+        var gradientIndex = this.getSelectedGradientIndex(comp, 0);
+        var propMap = this.getPropMap(fileString, comp.name, gradientIndex);
+        var gradientStops = this.getGradientStops(propMap);
+        return JSON.stringify(gradientStops);
     } catch (err) {
-        alert(err.line + ":" + err.number + "\n" + err.toString());
+        alert("Coloramen\n" + err);
     }
 };
