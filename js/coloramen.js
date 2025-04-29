@@ -61,7 +61,8 @@ function getBoundedColor(boundingStops, weight) {
         interpolateWeight(priorColor.b, afterColor.b, weight)
     ];
     const hex = rgb.map(color => {
-        return Math.round(color).toString(16).padStart(2, "0").toUpperCase();
+        const hex = Math.round(color).toString(16);
+        return hex.padStart(2, "0").toUpperCase();
     }).join("");
     return hex;
 }
@@ -106,7 +107,7 @@ function getBoundingStops(location) {
 
     return {
         priorStop,
-        afterStop,
+        afterStop
     };
 }
 
@@ -119,7 +120,8 @@ function getColorAsCSS(color, opacity) {
 }
 
 function getColorAsHex(color) {
-    return parseInt(color, 10).toString(16).toUpperCase();
+    const hex = parseInt(color, 10).toString(16);
+    return hex.toUpperCase();
 }
 
 function getColorAsNum(color) {
@@ -144,7 +146,8 @@ function getLocationAsNum(location) {
 }
 
 function getOpacityAsHex(opacity) {
-    return Math.round(opacity * 255).toString(16).toUpperCase();
+    const hex = Math.round(opacity * 255).toString(16);
+    return hex.toUpperCase();
 }
 
 function getOpacityAsNum(opacity) {
