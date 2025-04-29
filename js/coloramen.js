@@ -38,8 +38,9 @@ const locationText = locationPreview.querySelector("span");
 const locationEdit = locationContainer.querySelector("input");
 
 const applyButton = document.querySelector(".apply-button");
-const deleteButton = document.querySelector(".delete-button");
 const pullButton = document.querySelector(".pull-button");
+const mirrorButton = document.querySelector(".mirror-button");
+const deleteButton = document.querySelector(".delete-button");
 const aboutButton = document.querySelector(".about-button");
 
 /**************************************************************************************************
@@ -448,20 +449,6 @@ applyButton.addEventListener("click", () => {
 });
 
 /**************************************************************************************************
- * Delete Button **********************************************************************************
- **************************************************************************************************/
-
-deleteButton.addEventListener("click", () => {
-    const oldNum = Array.from(document.querySelectorAll(".gradient-stop")).length;
-    const newNum = oldNum - 1;
-    if (MIN_STOPS < newNum && newNum <= MAX_STOPS) {
-        document.querySelector(".selected").remove();
-        updateGradientInformation();
-        updateGradientPreview();
-    }
-});
-
-/**************************************************************************************************
  * Pull Button ************************************************************************************
  **************************************************************************************************/
 
@@ -481,6 +468,33 @@ pullButton.addEventListener("click", () => {
             updateGradientPreview();
         }
     });
+});
+
+/**************************************************************************************************
+ * Mirror Button **********************************************************************************
+ **************************************************************************************************/
+
+mirrorButton.addEventListener("click", () => {
+    Array.from(document.querySelectorAll(".gradient-stop")).forEach(stop => {
+        if (stop.dataset.location > 0 && stop.dataset.location < 50) {
+            const location = 100 - stop.dataset.location;
+            addGradientStop(stop.dataset.opacity, stop.dataset.color, location);
+        }
+    });
+});
+
+/**************************************************************************************************
+ * Delete Button **********************************************************************************
+ **************************************************************************************************/
+
+deleteButton.addEventListener("click", () => {
+    const oldNum = Array.from(document.querySelectorAll(".gradient-stop")).length;
+    const newNum = oldNum - 1;
+    if (MIN_STOPS < newNum && newNum <= MAX_STOPS) {
+        document.querySelector(".selected").remove();
+        updateGradientInformation();
+        updateGradientPreview();
+    }
 });
 
 /**************************************************************************************************
