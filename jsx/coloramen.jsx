@@ -6,6 +6,18 @@ $._coloramen.pickColor = function(oldColor, path) {
     return (newColor === -1) ? oldColor : newColor;
 };
 
+
+$._coloramen.removeColorama = function(layer) {
+    var effects = layer.property("ADBE Effect Parade");
+    var numEffects = effects.numProperties;
+    for (var e = 1; e <= numEffects; e++) {
+        var effect = effects.property(e);
+        if (effect.matchName === "APC Colorama") {
+            effect.remove();
+        }
+    }
+};
+
 $._coloramen.applyColorama = function(path) {
     try {
         app.beginUndoGroup("Apply Colorama");
@@ -19,6 +31,7 @@ $._coloramen.applyColorama = function(path) {
             throw "Please select a single layer";
         }
         var layer = selectedLayers[0];
+        this.removeColorama(layer);
         var preset = new File(path);
         layer.applyPreset(preset);
         app.endUndoGroup();
@@ -64,13 +77,15 @@ $._coloramen.toHex = function(value) {
 
 $._coloramen.getGradientStops = function(xmlString) {
     var stopRegex = new RegExp("<key>Stop-\\d+<\\/key>[\\s\\S]*?<\\/prop\\.list>", "g");
-
-    var stopBlocks = xmlString.match(stopRegex) || [];
-    var result = [];
-
     var stopKeyRegex = new RegExp("<key>(Stop-\\d+)<\\/key>");
     var floatRegex = new RegExp("<float>(.*?)<\\/float>", "g");
     var floatTagRegex = new RegExp("<\\/?float>", "g");
+
+    var stopBlocks = xmlString.match(stopRegex) || [];
+    var result = {
+        "opacityStops": [],
+        "colorStops": []
+    };
 
     for (var i = 0; i < stopBlocks.length; i++) {
         var block = stopBlocks[i];
@@ -85,33 +100,25 @@ $._coloramen.getGradientStops = function(xmlString) {
         }
 
         if (name && floatValues.length > 0) {
-            var existingStop = null;
-            for (var k = 0; k < result.length; k++) {
-                if (result[k].name === name) {
-                    existingStop = result[k];
-                    break;
-                }
-            }
-
-            if (!existingStop) {
-                existingStop = {
-                    "name": name
-                };
-                result.push(existingStop);
-            }
-
             if (floatValues.length === 3) {
-                existingStop.opacity = parseFloat((floatValues[2] * 100).toFixed(2));
+                result.opacityStops.push({
+                    "name": name,
+                    "location": parseFloat((floatValues[0] * 100).toFixed(2)),
+                    "opacity": parseFloat((floatValues[2] * 100).toFixed(2))
+                });
             } else if (floatValues.length === 6) {
-                existingStop.location = parseFloat((floatValues[0] * 100).toFixed(2));
                 var r = Math.round(floatValues[2] * 255);
                 var g = Math.round(floatValues[3] * 255);
                 var b = Math.round(floatValues[4] * 255);
-                existingStop.color = {
-                    "ae": [floatValues[2], floatValues[3], floatValues[4]],
-                    "rgb": [r, g, b],
-                    "hex": this.toHex(r) + this.toHex(g) + this.toHex(b)
-                };
+                result.colorStops.push({
+                    "name": name,
+                    "location": parseFloat((floatValues[0] * 100).toFixed(2)),
+                    "color": {
+                        "ae": [floatValues[2], floatValues[3], floatValues[4]],
+                        "rgb": [r, g, b],
+                        "hex": this.toHex(r) + this.toHex(g) + this.toHex(b)
+                    }
+                });
             }
         }
     }
@@ -194,4 +201,12 @@ $._coloramen.getGradientFromAE = function() {
     } catch (err) {
         alert("Coloramen\n" + err);
     }
+};
+
+$._coloramen.alertMismatchedStops = function(missingOpacities) {
+    var count = String(missingOpacities);
+    var singleStop = "gradient stop was missing a matching opacity value and defaulted to 100%.";
+    var multiStops = "gradient stops were missing matching opacity values and defaulted to 100%.";
+    var stops = (missingOpacities > 1) ? multiStops : singleStop;
+    alert("Coloramen\n" + count + " " + stops);
 };

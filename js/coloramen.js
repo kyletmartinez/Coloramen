@@ -455,20 +455,48 @@ applyButton.addEventListener("click", () => {
  * Pull Button ************************************************************************************
  **************************************************************************************************/
 
+function mergeOpacityIntoColors(gradientStops) {
+    const {opacityStops, colorStops} = gradientStops;
+    const tolerance = 1;
+
+    return colorStops.map(colorStop => {
+        const matchingOpacityStop = opacityStops.find(opacityStop => {
+            return Math.abs(opacityStop.location - colorStop.location) <= tolerance;
+        });
+
+        return {
+            ...colorStop,
+            ...(matchingOpacityStop && {
+                "opacity": matchingOpacityStop.opacity
+            })
+        };
+    });
+}
+
 pullButton.addEventListener("click", () => {
     csi.evalScript("$._coloramen.getGradientFromAE();", result => {
         const gradientStops = JSON.parse(result);
         if (gradientStops !== null) {
+            const mergedStops = mergeOpacityIntoColors(gradientStops);
             Array.from(document.querySelectorAll(".gradient-stop")).forEach(stop => {
                 stop.remove();
             });
-            gradientStops.forEach(stop => {
+            let missingOpacities = 0;
+            mergedStops.forEach(stop => {
+                missingOpacities += (stop.hasOwnProperty("opacity")) ? 0 : 1;
                 const opacity = parseFloat(stop.opacity) || 100;
                 const color = stop.color.hex;
                 const location = 50 * (parseFloat(stop.location) / 100);
                 addGradientStop(opacity, color, location);
             });
             updateGradientPreview();
+            if (missingOpacities > 0) {
+                const firstStop = mergedStops.at(0).opacity;
+                const lastStop = mergedStops.at(-1).opacity;
+                if (firstStop === undefined || lastStop === undefined || firstStop !== lastStop) {
+                    csi.evalScript(`$._coloramen.alertMismatchedStops(${missingOpacities});`);
+                }
+            }
         }
     });
 });
