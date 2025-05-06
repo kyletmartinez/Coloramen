@@ -38,6 +38,8 @@ const locationText = locationPreview.querySelector("span");
 const locationEdit = locationContainer.querySelector("input");
 
 const applyButton = document.querySelector(".apply-button");
+const pullButton = document.querySelector(".pull-button");
+const mirrorButton = document.querySelector(".mirror-button");
 const deleteButton = document.querySelector(".delete-button");
 const aboutButton = document.querySelector(".about-button");
 
@@ -59,7 +61,8 @@ function getBoundedColor(boundingStops, weight) {
         interpolateWeight(priorColor.b, afterColor.b, weight)
     ];
     const hex = rgb.map(color => {
-        return Math.round(color).toString(16).padStart(2, "0").toUpperCase();
+        const hex = Math.round(color).toString(16);
+        return hex.padStart(2, "0").toUpperCase();
     }).join("");
     return hex;
 }
@@ -104,7 +107,7 @@ function getBoundingStops(location) {
 
     return {
         priorStop,
-        afterStop,
+        afterStop
     };
 }
 
@@ -117,7 +120,8 @@ function getColorAsCSS(color, opacity) {
 }
 
 function getColorAsHex(color) {
-    return parseInt(color, 10).toString(16).toUpperCase();
+    const hex = parseInt(color, 10).toString(16);
+    return hex.toUpperCase();
 }
 
 function getColorAsNum(color) {
@@ -142,7 +146,8 @@ function getLocationAsNum(location) {
 }
 
 function getOpacityAsHex(opacity) {
-    return Math.round(opacity * 255).toString(16).toUpperCase();
+    const hex = Math.round(opacity * 255).toString(16);
+    return hex.toUpperCase();
 }
 
 function getOpacityAsNum(opacity) {
@@ -444,6 +449,69 @@ applyButton.addEventListener("click", () => {
     fs.appendFileSync(templateOutPath, outputBuffer);
 
     csi.evalScript(`$._coloramen.applyColorama(\"${templateOutPath}\");`);
+});
+
+/**************************************************************************************************
+ * Pull Button ************************************************************************************
+ **************************************************************************************************/
+
+function mergeOpacityIntoColors(gradientStops) {
+    const {opacityStops, colorStops} = gradientStops;
+    const tolerance = 1;
+
+    return colorStops.map(colorStop => {
+        const matchingOpacityStop = opacityStops.find(opacityStop => {
+            return Math.abs(opacityStop.location - colorStop.location) <= tolerance;
+        });
+
+        return {
+            ...colorStop,
+            ...(matchingOpacityStop && {
+                "opacity": matchingOpacityStop.opacity
+            })
+        };
+    });
+}
+
+pullButton.addEventListener("click", () => {
+    csi.evalScript("$._coloramen.getGradientFromAE();", result => {
+        const gradientStops = JSON.parse(result);
+        if (gradientStops !== null) {
+            const mergedStops = mergeOpacityIntoColors(gradientStops);
+            Array.from(document.querySelectorAll(".gradient-stop")).forEach(stop => {
+                stop.remove();
+            });
+            let missingOpacities = 0;
+            mergedStops.forEach(stop => {
+                missingOpacities += (stop.hasOwnProperty("opacity")) ? 0 : 1;
+                const opacity = parseFloat(stop.opacity) || 100;
+                const color = stop.color.hex;
+                const location = 50 * (parseFloat(stop.location) / 100);
+                addGradientStop(opacity, color, location);
+            });
+            updateGradientPreview();
+            if (missingOpacities > 0) {
+                const firstStop = mergedStops.at(0).opacity;
+                const lastStop = mergedStops.at(-1).opacity;
+                if (firstStop === undefined || lastStop === undefined || firstStop !== lastStop) {
+                    csi.evalScript(`$._coloramen.alertMismatchedStops(${missingOpacities});`);
+                }
+            }
+        }
+    });
+});
+
+/**************************************************************************************************
+ * Mirror Button **********************************************************************************
+ **************************************************************************************************/
+
+mirrorButton.addEventListener("click", () => {
+    Array.from(document.querySelectorAll(".gradient-stop")).forEach(stop => {
+        if (stop.dataset.location > 0 && stop.dataset.location < 50) {
+            const location = 100 - stop.dataset.location;
+            addGradientStop(stop.dataset.opacity, stop.dataset.color, location);
+        }
+    });
 });
 
 /**************************************************************************************************
