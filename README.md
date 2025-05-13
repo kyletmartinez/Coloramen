@@ -4,8 +4,6 @@ Coloramen 2 is a CEP helper panel for the Colorama effect in Adobe After Effects
 
 ## About
 
-Coloramen 2 is a CEP helper panel for the Colorama effect in Adobe After Effects used to easily set colors, positions, and opacity values for each gradient stop in a Colorama gradient.
-
 The native Colorama user interface is quite advanced but there are 2 glaring issues:
 
 * **Issue #1:** Output Cycle color stops cannot be placed accurately via percentage values.
