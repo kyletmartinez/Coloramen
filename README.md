@@ -1,8 +1,8 @@
-# Coloramen 2
+# Coloramen
 
-Coloramen 2 is a CEP helper panel for the Colorama effect in Adobe After Effects used to easily set colors, positions, and opacity values for each gradient stop in a Colorama gradient.
+Coloramen is a CEP helper panel for the Colorama effect in Adobe After Effects used to easily set colors, positions, and opacity values for each gradient stop in a Colorama gradient.
 
-## About
+## About Coloramen
 
 The native Colorama user interface is quite advanced but there are 2 glaring issues:
 
@@ -27,18 +27,26 @@ With a gradient stop selected:
 * **Opacity:** Set the opacity value (`0%` to `100%`) for the current stop
 * **Location:** Set the location value (`0%` to `100%`) for the current stop
 
-## Usage
+## Using Coloramen
 
-1. Download the latest version of Coloramen 2 from the `Releases` section along the right side of this repository.
-2. Unzip and install Coloramen 2 using the ZXP/UXP Installer from [aescripts+aeplugins](https://aescripts.com/learn/zxp-installer/).
-3. Open Coloraman 2 from the `Window > Extensions > Coloraman 2` menu.
-4. Set your gradient manually, via the `Pull Gradient` button, via the `Mirror Gradient` button and more.
-5. Select a layer in After Effects and click the `Appy Colorama` button.
+You an find the latest version of Coloramen 2 in the [Releases](/releases) section along the right side of this repository.
+
+### Installing Coloramen
+
+Coloramen 2 is an extension for Adobe After Effects delivered as a ZXP.
+
+* For installation instructions please visit the aescripts+aeplugins [ZXP/UXP Installer](https://aescripts.com/learn/zxp-installer/) page.
+* For installation questions please visit the aescripts+aeplugins [ZXP/UXP Installer FAQ](https://aescripts.com/knowledgebase/index/view/faq/zxp-installer-faq/) page.
+
+> [!IMPORTANT]  
+> Coloramen 2 is not signed and will likely require you to tweak some settings. Learn more at [aescripts+aeplugins](https://aescripts.com/knowledgebase/index/view/faq/zxp-cep-extension-won-t-open/).
+
+### Running Coloramen
+
+1. Open Coloraman 2 from the `Window > Extensions > Coloraman 2` menu.
+2. Set your gradient manually, via the `Pull Gradient` button, via the `Mirror Gradient` button and more.
+3. Select a layer in After Effects and click the `Appy Colorama` button.
 
 ## License
 
 Distributed under the MIT License. See [LICENSE](/LICENSE) for more information.
-
-## Contact
-Kyle Martinez
-[Website](https://www.kyle-martinez.com/) | [Instagram](https://www.instagram.com/kyletmartinez/)
