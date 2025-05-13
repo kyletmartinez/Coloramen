@@ -2,6 +2,8 @@
 
 Coloramen is a CEP helper panel for the Colorama effect in Adobe After Effects used to easily set colors, positions, and opacity values for each gradient stop in a Colorama gradient.
 
+[coloramen.webm](https://github.com/user-attachments/assets/956b6a0f-09bf-4784-b021-9d24223f9977)
+
 ## About Coloramen
 
 The native Colorama user interface is quite advanced but there are 2 glaring issues:
