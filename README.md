@@ -29,7 +29,7 @@ With a gradient stop selected:
 
 ## Using Coloramen
 
-You an find the latest version of Coloramen 2 in the [Releases](/releases) section along the right side of this repository.
+You an find the latest version of Coloramen 2 in the [Releases](https://github.com/kyletmartinez/coloramen/releases) section along the right side of this repository.
 
 ### Installing Coloramen
 
