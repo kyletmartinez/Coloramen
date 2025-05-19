@@ -1,5 +1,7 @@
 # Coloramen
 
+![](/automation/coloramen-2.webp)
+
 Coloramen is a CEP helper panel for the Colorama effect in Adobe After Effects used to easily set colors, positions, and opacity values for each gradient stop in a Colorama gradient.
 
 ## About Coloramen
