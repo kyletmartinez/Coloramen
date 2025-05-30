@@ -1,10 +1,10 @@
-# Coloramen
+# Coloramen 2
 
 ![](/automation/coloramen-2.webp)
 
-Coloramen is a CEP helper panel for the Colorama effect in Adobe After Effects used to easily set colors, positions, and opacity values for each gradient stop in a Colorama gradient.
+Coloramen 2 is a CEP helper panel for the Colorama effect in Adobe After Effects used to easily set colors, positions, and opacity values for each gradient stop in a Colorama gradient.
 
-## About Coloramen
+## About Coloramen 2
 
 The native Colorama user interface is quite advanced but there are 2 glaring issues:
 
@@ -29,11 +29,11 @@ With a gradient stop selected:
 * **Opacity:** Set the opacity value (`0%` to `100%`) for the current stop
 * **Location:** Set the location value (`0%` to `100%`) for the current stop
 
-## Using Coloramen
+## Using Coloramen 2
 
 You an find the latest version of Coloramen 2 in the [Releases](https://github.com/kyletmartinez/coloramen/releases) section along the right side of this repository.
 
-### Installing Coloramen
+### Installing Coloramen 2
 
 Coloramen 2 is an extension for Adobe After Effects delivered as a ZXP.
 
@@ -43,7 +43,7 @@ Coloramen 2 is an extension for Adobe After Effects delivered as a ZXP.
 > [!IMPORTANT]  
 > Coloramen 2 is not signed and will likely require you to tweak some settings. Learn more at [aescripts+aeplugins](https://aescripts.com/knowledgebase/index/view/faq/zxp-cep-extension-won-t-open/).
 
-### Running Coloramen
+### Running Coloramen 2
 
 1. Open Coloraman 2 from the `Window > Extensions > Coloraman 2` menu.
 2. Set your gradient manually, via the `Pull Gradient` button, via the `Mirror Gradient` button and more.
